@@ -3,8 +3,13 @@
 import { motion } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
+  const {isLoggedin}= useAuth();
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-100 text-gray-900 relative overflow-hidden">
       {/* Animated background blobs */}
@@ -54,9 +59,13 @@ export default function LandingPage() {
           transition={{ delay: 0.6, duration: 0.8 }}
           className="flex gap-4"
         >
-          <button className="px-6 py-3 rounded-xl text-lg font-semibold shadow-lg bg-orange-600 text-white hover:bg-orange-700 hover:scale-105 hover:shadow-xl transition-transform">
-            Get Started
-          </button>
+          {/* <Link href={isLoggedin?"/recipes":"/auth/register"}> */}
+            <button 
+            onClick={()=> router.push(isLoggedin?"/recipes":"/auth/register")}
+            className="px-6 py-3 rounded-xl text-lg font-semibold shadow-lg bg-orange-600 text-white hover:bg-orange-700 hover:scale-105 hover:shadow-xl transition-transform">
+              Get Started
+            </button>
+          {/* </Link> */}
 
           <Link href="/recipes">
             <button className="px-6 py-3 rounded-xl text-lg font-semibold border border-orange-600 text-orange-600 hover:bg-orange-50 hover:scale-105 transition-transform">

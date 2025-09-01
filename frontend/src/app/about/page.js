@@ -4,9 +4,9 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-export default function AboutPage({id}) {
+export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-orange-50 text-gray-900 px-6 py-20" id={id}>
+    <div className="min-h-screen bg-gradient-to-b from-white to-orange-50 text-gray-900 px-6 py-20">
       {/* Heading */}
       <motion.h1
         initial={{ opacity: 0, y: -40 }}

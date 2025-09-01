@@ -8,7 +8,7 @@ export default function Home(){
   return(
     <div>
       <LandingPage/>
-      <AboutPage id={"about"}/>
+      <AboutPage/>
       <RecipesPage/>
     </div>
   )

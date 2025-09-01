@@ -10,10 +10,16 @@ const RecipeDetailPage = () => {
   const router = useRouter(); 
   const { id } = params;
   const {token}= useAuth();
-
-
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
+  const {isLoggedin} = useAuth();
+
+
+  useEffect(()=>{
+    if(!isLoggedin){
+      router.push("/auth/login");
+    }
+  },[isLoggedin,router]);
 
   const fetchRecipe = async () => {
     try {
@@ -36,7 +42,7 @@ const RecipeDetailPage = () => {
   }, [id]);
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
-  if (!recipe) return <p className="text-center mt-10">Recipe not found</p>;
+  if (!recipe) return <></>
 
   return (
     <div className="max-w-6xl mx-auto mt-10 p-4 flex flex-col md:flex-row gap-8">
@@ -52,7 +58,10 @@ const RecipeDetailPage = () => {
       {/* Right: Info */}
       <div className="md:w-1/2 flex flex-col gap-4">
         <h1 className="text-3xl font-bold">{recipe.title}</h1>
-        <p className="text-gray-600">Category: {recipe.category}</p>
+        <p className="text-xl">
+          <span className="font-semibold">Category: </span> 
+        {recipe.category}
+        </p>
 
         <div>
           <h2 className="text-xl font-semibold mb-2">Ingredients:</h2>
@@ -74,16 +83,8 @@ const RecipeDetailPage = () => {
           <p>{recipe.makingsteps}</p>
         </div>
 
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Comments</h2>
-          <input
-            type="text"
-            placeholder="enter comments"
-          />
-        </div>
-
         <button
-          className="mt-4 px-4 py-2 bg-purple-200 rounded hover:bg-purple-300 transition"
+          className="cursor-pointer mt-4 px-4 py-2 bg-purple-200 rounded hover:bg-purple-300 transition"
           onClick={() => router.back()}
         >
           Go Back
