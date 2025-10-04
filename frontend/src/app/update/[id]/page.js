@@ -16,14 +16,13 @@ const UpdateReceipe = () => {
   const [imageurl, setimageurl] = useState("");
   const [cookingsteps, setcookingsteps] = useState("");
 
-
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const res = await api.get(`/receipe/${id}`,{
-            headers:{
-                Authorization: `Bearer ${token}`
-            }
+        const res = await api.get(`/receipe/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
         if (res.data.success) {
           const recipe = res.data.receipe;
@@ -53,7 +52,7 @@ const UpdateReceipe = () => {
           category,
           ingredients: ingredients.split(",").map((item) => item.trim()),
           imageurl,
-          makingsteps: cookingsteps
+          makingsteps: cookingsteps,
         },
         {
           headers: {
@@ -71,6 +70,17 @@ const UpdateReceipe = () => {
     } catch (error) {
       console.log(error);
       alert("Some problem in updating recipe , try again later");
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setimageurl(reader.result); // ✅ base64 string
+      };
     }
   };
 
@@ -111,15 +121,32 @@ const UpdateReceipe = () => {
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300"
           />
           <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleFileChange(e)}
+            className="cursor-pointer"
+          />
+          {/* <input
             type="text"
             placeholder="Image URL"
             value={imageurl}
             onChange={(e) => setimageurl(e.target.value)}
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-300"
-          />
+          /> */}
+
+          {imageurl && (
+            <div className="mt-4 text-center">
+              <p className="text-gray-600 text-sm mb-2">Preview:</p>
+              <img
+                src={imageurl}
+                alt="preview"
+                className="w-20 h-20 object-cover mx-auto rounded shadow"
+              />
+            </div>
+          )}
           <button
             type="submit"
-            className="w-full bg-purple-500 text-white font-semibold py-3 rounded-lg hover:bg-purple-600 transition"
+            className="w-full cursor-pointer bg-purple-500 text-white font-semibold py-3 rounded-lg hover:bg-purple-600 transition"
           >
             Update Recipe
           </button>

@@ -14,6 +14,7 @@ import { createServer } from "http";
 import { useServer } from "graphql-ws/lib/use/ws"; // ✅ correct
 import { WebSocketServer } from "ws";
 import { makeExecutableSchema } from "@graphql-tools/schema";
+import userrouter from "./routes/userroutes.js";
 
 dotenv.config();
 const app = express();
@@ -25,7 +26,7 @@ connectDB();
 
 const schema=makeExecutableSchema({ typeDefs, resolvers })
 app.use(cors());
-app.use("/api/v1", express.json(), router, receiperouter);
+app.use("/api/v1", express.json(), router, receiperouter, userrouter);
 
 app.get("/", (req, res) => {
   res.json({ success: true, message: "Server working perfectly" });

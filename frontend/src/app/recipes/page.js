@@ -2,34 +2,20 @@
 import { useCallback, useEffect, useState } from "react";
 import api from "@/utils/api";
 import Link from "next/link";
-import { jwtDecode } from "jwt-decode";
 import { useAuth } from "@/context/AuthContext";
 import  debounce  from "lodash.debounce";
 
 
 const RecipesPage = () => {
-  
-  const [userID, setuserID] = useState(null);
-  const [token, settoken] = useState(null);
   const [recipes, setRecipes] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const {isLoggedin} = useAuth();
+  const {isLoggedin, userid, token} = useAuth();
   const [favouriteIds, setFavouriteIds] = useState([]);
   const [category, setCategory] = useState("");
   const [page, setpage]= useState(1);
   const [totalpages, settotalpages] = useState(1);
-
-  useEffect(() => {
-    const t = localStorage.getItem("token");
-    if (t) {
-      settoken(t);
-      const decoded = jwtDecode(t);
-      console.log(decoded); 
-      setuserID(decoded.id);
-    }
-  }, []);
-
+  
   const fetchRecipes = async (page) => {
     try {
       const res = await api.get(`/receipies?page=${page}`); // backend route
@@ -38,11 +24,12 @@ const RecipesPage = () => {
         settotalpages(res.data.totalpages);
         setpage(res.data.currentpage)
       };
+      console.log(res.data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
-    }
+    } 
   };
 
   const fetchByCategory = async (selectedCategory) => {
@@ -81,6 +68,7 @@ const RecipesPage = () => {
       });
       if (res.data.success) {
         setRecipes((prev) => prev.filter((recipe) => recipe._id !== id));
+        window.location.reload();
       } else {
         console.error(res.data.message);
         alert(res.data.message);
@@ -145,8 +133,8 @@ const RecipesPage = () => {
   if (loading) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-100 text-gray-900 relative overflow-hidden">
-      <div className="max-w-6xl mx-auto mt-10 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-100 text-gray-900 relative overflow-hidden flex flex-col justify-between">
+      <div className="max-w-6xl mx-auto w-[100%] mt-10 px-4">
         {/* Search bar */}
         <div className="mb-8 flex flex-wrap gap-2 items-center">
           <input
@@ -162,7 +150,7 @@ const RecipesPage = () => {
             onChange={(e) => setCategory(e.target.value)}
             className="cursor-pointer px-4 py-3 rounded-xl border border-gray-300 shadow-sm bg-white text-gray-700 
              focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 
-             hover:border-purple-300 transition-all duration-200 cursor-pointer"
+             hover:border-purple-300 transition-all duration-200"
           >
             <option value="">All</option>
             <option value="Veg">Veg</option>
@@ -210,7 +198,7 @@ const RecipesPage = () => {
                   </button>
                 )}
                 
-                {recipe.createdBy._id === userID && (
+                {recipe.createdBy._id === userid && (
                   <>
                     <button
                       onClick={() => deletehandler(recipe._id)}
@@ -241,7 +229,7 @@ const RecipesPage = () => {
         <button
           onClick={() => setpage((p) => Math.max(p - 1, 1))}
           disabled={page === 1}
-          className="cursor-pointer px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+          className="cursor-pointer px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Prev
         </button>
@@ -253,7 +241,7 @@ const RecipesPage = () => {
         <button
           onClick={() => setpage((p) => Math.min(p + 1, totalpages))}
           disabled={page === totalpages}
-          className="px-3 cursor-pointer py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+          className="px-3 cursor-pointer py-1 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next
         </button>
