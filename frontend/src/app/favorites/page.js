@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import api from "@/utils/api";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
 
 const FavoritesPage = () => {
@@ -12,14 +11,7 @@ const FavoritesPage = () => {
   const router = useRouter();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userID, setuserID] = useState(null);
-
-  useEffect(() => {
-    if (token) {
-      const decoded = jwtDecode(token);
-      setuserID(decoded.id);
-    }
-  }, [token]);
+  const { userid } = useAuth();
 
   useEffect(() => {
     if (!isLoggedin) {
@@ -44,6 +36,23 @@ const FavoritesPage = () => {
     }
   };
 
+  const removeFavouritesHandler = async (id) => {
+    try {
+      const res = await api.put(
+        `/removefromfavourites/${id}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success) {
+        setFavorites((prev) => prev.filter((fav) => fav._id !== id));
+        alert("Removed from favourites");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error removing from favourites");
+    }
+  };
+
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
@@ -64,15 +73,12 @@ const FavoritesPage = () => {
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (favorites.length === 0)
     return (
-      <p className="text-center mt-10">
-        You have not added any favorites yet
-      </p>
+      <p className="min-h-screen text-center bg-gradient-to-b from-orange-50 via-white to-orange-100 text-gray-900 relative overflow-hidden">You have not added any favorites yet</p>
     );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-100 text-gray-900 relative overflow-hidden">
       <div className="max-w-6xl mx-auto mt-10 px-4">
-
         {/* Favorites Grid */}
         <div className="grid grid-cols-1 mb-5 rounded-full sm:grid-cols-2 md:grid-cols-3 gap-6">
           {favorites.map((recipe) => (
@@ -102,7 +108,7 @@ const FavoritesPage = () => {
                   </button>
                 </Link>
 
-                {recipe.createdBy._id === userID && (
+                {recipe.createdBy._id === userid && (
                   <>
                     <button
                       onClick={() => deletehandler(recipe._id)}
@@ -118,6 +124,12 @@ const FavoritesPage = () => {
                     </Link>
                   </>
                 )}
+                <button
+                  onClick={()=>removeFavouritesHandler(recipe._id)}
+                  className="cursor-pointer px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
+                >
+                  Remove
+                </button>
               </div>
             </div>
           ))}

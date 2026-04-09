@@ -12,7 +12,7 @@ const Navbar = () => {
 
 
   return (
-    <nav className="flex justify-between items-center p-4 bg-purple-200">
+    <nav className="flex flex-wrap justify-between items-center p-4 bg-orange-200">
       {/* Brand */}
       <div className="text-2xl font-bold">
         <Link href="/">FoodFusion</Link>
@@ -32,10 +32,10 @@ const Navbar = () => {
       <div className="flex gap-3">
         {!isLoggedin?<>
           <Link href="/auth/login">
-            <button className="px-4 py-1 bg-white rounded shadow hover:bg-purple-100 transition">Login</button>
+            <button className="px-4 py-1 bg-white cursor-pointer rounded shadow hover:bg-purple-100 transition">Login</button>
           </Link>
           <Link href="/auth/register">
-            <button className="px-4 py-1 bg-white rounded shadow hover:bg-purple-100 transition">Signup</button>
+            <button className="px-4 py-1 bg-white cursor-pointer rounded shadow hover:bg-purple-100 transition">Signup</button>
           </Link>
           </>:(
             <>
@@ -61,11 +61,17 @@ const Navbar = () => {
                       </Link>
                     </li>
                     <li>
+                      <Link 
+                        href="/profile"
+                        className="block px-4 py-2 hover:bg-purple-100"
+                      >
+                        Edit Profile
+                      </Link>
+                    </li>
+                    <li>
                       <button
                         onClick={() => {
                           logout();
-                          // router.replace(router.asPath);
-                          router.refresh();
                           setOpen(false);
                         }}
                         className="block w-full text-left px-4 py-2 text-red-600 hover:bg-purple-100"

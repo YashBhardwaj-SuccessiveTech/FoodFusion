@@ -23,7 +23,7 @@ const Login = () => {
       if (res.data.success) {
         login(res.data.token);
         setMessage("Login successful! Redirecting...");
-        setTimeout(() => router.back());
+        // setTimeout(() => router.back());
       } else {
         setMessage(res.data.message);
       }

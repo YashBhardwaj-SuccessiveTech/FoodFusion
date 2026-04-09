@@ -43,13 +43,14 @@ export const addreceipe = async (req, res) => {
       });
     }
 
-    console.log("decoded user", req.user);
+    // console.log("decoded user", req.user);
 
     const newRecipe = new Receipe({
       title,
       makingsteps,
       category,
-      imageurl: imageurl || "",
+      imageurl,
+      // imageurl: imageurl || "",
       ingredients,
       createdBy: req.user.id,
     });
@@ -85,6 +86,8 @@ export const updateReceipe = async (req, res) => {
     recipe.ingredients = ingredients || recipe.ingredients;
 
     await recipe.save();
+
+    pubsub.publish("RECIPE_UPDATED",{ recipeUpdated: recipe});
 
     return res.json({
       success: true,
@@ -257,5 +260,33 @@ export const addtofavourities = async (req, res) => {
       success: false,
       message: "some error in addig to favourities",
     });
+  }
+};
+
+// controllers/userController.js
+export const removeFromFavourites = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const recipeId = req.params.id;
+
+    const people = await user.findById(userId);
+    if (!people) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // remove recipeId if exists
+    people.favorites = people.favorites.filter(
+      (fav) => fav.toString() !== recipeId
+    );
+    await people.save();
+
+    return res.json({
+      success: true,
+      message: "Removed from favourites",
+      favorites: people.favorites,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

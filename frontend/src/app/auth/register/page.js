@@ -32,7 +32,7 @@ const Register = () => {
     } catch (err) {
       console.error(err);
       setMessage("Server error. Try again.");
-    }
+    } 
   };
 
   return (

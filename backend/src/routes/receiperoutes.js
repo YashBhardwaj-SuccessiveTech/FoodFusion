@@ -1,5 +1,5 @@
 import express from "express";
-import { addreceipe, addtofavourities, allreceipes, deletereceipe, filtercategory, getreceipe, search, updateReceipe } from "../controllers/receipeControllers.js";
+import { addreceipe, addtofavourities, allreceipes, deletereceipe, filtercategory, getreceipe, removeFromFavourites, search, updateReceipe } from "../controllers/receipeControllers.js";
 import { authenticate } from "../middlewares/authenticate.js";
 import { checkRecipeOwner } from "../middlewares/checkreceipeOwner.js";
 import { getfavourites } from "../controllers/getfavorites.js";
@@ -13,6 +13,7 @@ receiperouter.get("/filtercategory", filtercategory);
 receiperouter.get("/getfavorites", authenticate,getfavourites);
 receiperouter.post("/addreceipe", authenticate, addreceipe);
 receiperouter.put("/addtofavourities/:id", authenticate,addtofavourities);
+receiperouter.put("/removefromfavourites/:id", authenticate, removeFromFavourites);
 receiperouter.put("/updatereceipe/:id", authenticate, checkRecipeOwner, updateReceipe);
 receiperouter.delete("/deletereceipe/:id",authenticate, checkRecipeOwner, deletereceipe);
 
